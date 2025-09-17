@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83e06419e0c3b0845890653964936ce8, type: 3}
+  m_Name: 20-El Juicio
+  m_EditorClassIdentifier: 
+  nombre: El Juicio
+  ID: 20
+  descripcionCarta: Al caer en una casilla y no tener suficiente dinero para pagarlo,
+    pierdes todo tu dinero hasta quedarte con 100 y saldas ese pago.
+  precio: 800

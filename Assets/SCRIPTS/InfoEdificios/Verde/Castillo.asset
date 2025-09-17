@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cdd6e6a5c59a4940bcc70ebe024aff8, type: 3}
+  m_Name: Castillo
+  m_EditorClassIdentifier: 
+  IDentificador: 23
+  groupID: 6
+  nombreEdificio: Castillo
+  precioCasilla: 320
+  comprable: 1
+  comprado: 0
+  dueno: 4
+  colorCasa: {r: 0, g: 0.43137255, b: 0, a: 1}
+  nivelCasilla: 0
+  hipoteca: 0
+  grupoCompleto: 0
+  precioAlquiler: 0
+  NivelAlquiler: 0
+  alquilerBase: 28
+  alquilerColorCompleto: 56
+  precioMejora: 200
+  alquilerLvl1: 150
+  alquilerLvl2: 450
+  alquilerLvl3: 1000
+  arrayPreciosAlquiler: 1c00000096000000c2010000e8030000
+  prefabEdificioBase: {fileID: 0}
+  prefabEdificioMejora1: {fileID: 0}
+  prefabEdificioMejora2: {fileID: 0}
+  prefabEdificioMejora3: {fileID: 0}
+  arrayPrefabs: []

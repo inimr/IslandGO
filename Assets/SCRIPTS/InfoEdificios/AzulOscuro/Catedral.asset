@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cdd6e6a5c59a4940bcc70ebe024aff8, type: 3}
+  m_Name: Catedral
+  m_EditorClassIdentifier: 
+  IDentificador: 7
+  groupID: 7
+  nombreEdificio: Catedral
+  precioCasilla: 350
+  comprable: 1
+  comprado: 0
+  dueno: 0
+  colorCasa: {r: 0, g: 0, b: 0.54901963, a: 1}
+  nivelCasilla: 0
+  hipoteca: 0
+  grupoCompleto: 0
+  precioAlquiler: 0
+  NivelAlquiler: 0
+  alquilerBase: 35
+  alquilerColorCompleto: 70
+  precioMejora: 200
+  alquilerLvl1: 175
+  alquilerLvl2: 500
+  alquilerLvl3: 1100
+  arrayPreciosAlquiler: 23000000af000000f40100004c040000
+  prefabEdificioBase: {fileID: 0}
+  prefabEdificioMejora1: {fileID: 0}
+  prefabEdificioMejora2: {fileID: 0}
+  prefabEdificioMejora3: {fileID: 0}
+  arrayPrefabs: []

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cdd6e6a5c59a4940bcc70ebe024aff8, type: 3}
+  m_Name: Universidad
+  m_EditorClassIdentifier: 
+  IDentificador: 17
+  groupID: 3
+  nombreEdificio: Universidad
+  precioCasilla: 200
+  comprable: 1
+  comprado: 0
+  dueno: 4
+  colorCasa: {r: 0.9019608, g: 0.3529412, b: 0, a: 1}
+  nivelCasilla: 0
+  hipoteca: 0
+  grupoCompleto: 0
+  precioAlquiler: 0
+  NivelAlquiler: 0
+  alquilerBase: 16
+  alquilerColorCompleto: 32
+  precioMejora: 100
+  alquilerLvl1: 80
+  alquilerLvl2: 220
+  alquilerLvl3: 600
+  arrayPreciosAlquiler: 1000000050000000dc00000058020000
+  prefabEdificioBase: {fileID: 0}
+  prefabEdificioMejora1: {fileID: 0}
+  prefabEdificioMejora2: {fileID: 0}
+  prefabEdificioMejora3: {fileID: 0}
+  arrayPrefabs: []

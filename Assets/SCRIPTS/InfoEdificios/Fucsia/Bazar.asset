@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cdd6e6a5c59a4940bcc70ebe024aff8, type: 3}
+  m_Name: Bazar
+  m_EditorClassIdentifier: 
+  IDentificador: 12
+  groupID: 2
+  nombreEdificio: Bazar
+  atajable: 0
+  posFinalAtajoTablero: 0
+  bloqueable: 0
+  comprable: 1
+  esPasivaKarma: 0
+  generacionPasiva: 0
+  precioCasilla: 160
+  comprado: 0
+  dueno: 4
+  colorCasa: {r: 0.84313726, g: 0, b: 0.7058824, a: 1}
+  nivelCasilla: 0
+  hipoteca: 0
+  grupoCompleto: 0
+  precioAlquiler: 0
+  NivelAlquiler: 0
+  alquilerBase: 12
+  alquilerColorCompleto: 24
+  precioMejora: 100
+  alquilerLvl1: 60
+  alquilerLvl2: 180
+  alquilerLvl3: 500
+  arrayPreciosAlquiler: 0c0000003c000000b4000000f4010000
+  prefabEdificioBase: {fileID: 0}
+  prefabEdificioMejora1: {fileID: 0}
+  prefabEdificioMejora2: {fileID: 0}
+  prefabEdificioMejora3: {fileID: 0}
+  arrayPrefabs: []
