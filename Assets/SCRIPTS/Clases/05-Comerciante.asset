@@ -16,5 +16,5 @@ MonoBehaviour:
   clase: 5
   textoDescriptivo: Los ingresos pasivos al final de turno aumentan un %15. Deshipotecar
     una propiedad no le cuesta intereses.
-  spriteBoton: {fileID: 21300000, guid: e44d30d1db8d60d4faa984ac76e1e1b8, type: 3}
-  iconoPlayer: {fileID: 21300000, guid: e44d30d1db8d60d4faa984ac76e1e1b8, type: 3}
+  spriteBoton: {fileID: 21300000, guid: fc113d0e9e873f74b8eae8002f8d2eff, type: 3}
+  iconoPlayer: {fileID: 21300000, guid: fc113d0e9e873f74b8eae8002f8d2eff, type: 3}

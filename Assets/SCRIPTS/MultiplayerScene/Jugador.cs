@@ -9,12 +9,12 @@ public class Jugador : NetworkBehaviour
     private int ID;
 
 
-    [SerializeField] Transform padreCamara;
+    [SerializeField] Transform lookAtCamara;
+    [SerializeField] Transform positionCamara;
     private const int PRECIO_VUELTA = 200;
-    private const float ALTURA_MINIMA_SALTO = 1.5f;
-
+    private const float ALTURA_MINIMA_SALTO = 0.5f;
+    private const float MAX_SPEED = 5;
     private bool esImpostor;
-
     private bool haAtajado;
     private int posTablero;
     private bool esDobles; 
@@ -23,11 +23,20 @@ public class Jugador : NetworkBehaviour
     private int turnosEnCarcel;
     private bool tarjetaLibreCarcel;
 
+    public bool enMovimiento = false; //PARA LA CAMARA PROVISIONAL
+
     private int cooldownTrampero;
 
     private const int TURNO_ACTIVACION_CLASES = 3;
 
     public NetworkVariable<int> dinero = new();
+    public NetworkVariable<int> karma = new();
+
+    public NetworkVariable<int> dineroPasivo = new();
+    public NetworkVariable<int> karmaPasivo = new();
+
+    public NetworkVariable<bool> enNegociacion = new();
+    public NetworkVariable<bool> enDerrota = new();
     public enum FaseJuego
     {
         None,
@@ -39,9 +48,8 @@ public class Jugador : NetworkBehaviour
     private Classes clase = Classes.None;
     private bool esLuna = false;
     private bool esFuerza = false;
-    public bool enDerrota {  get; private set; }
     private int cantidadEnSol = 0;
-
+    private DiaryManager diaryManager;
     [SerializeField] List<CartaCasilla> inventarioCartasCasillas;
 
     static int SortByGroupID(CartaCasilla c1, CartaCasilla c2)
@@ -63,9 +71,10 @@ public class Jugador : NetworkBehaviour
         GameManagerMultiplayer.Instance.OnCambiarFaseJugador += GameManagerMultiplayer_OnCambiarFaseJugador;
         CartaManager.Instance.OnCartaCreada += CartaManager_OnCartaCreada;
         
+        
         //LogicaSuerteMultiplayer.Instance.OnTarjetaLibreConseguida += LogicaSuerte_OnTarjetaLibreConseguida;
 
-        
+        diaryManager = GameObject.FindFirstObjectByType<DiaryManager>();
         
     }
 
@@ -112,27 +121,36 @@ public class Jugador : NetworkBehaviour
 
           
         }
-
+        //SI NO QUEREMOS QUE ESTE AQUI LO PODEMOS MOVER A OTRO LADO
+        if(faseActual == FaseJuego.Planificacion)
+        {         
+            if (enNegociacion.Value)
+            {
+                diaryManager.ActivarPanelNegociacionRecibida();
+            }
+        }
+        
       
     }
    
     public override void OnNetworkSpawn()
     {        
         ID = (int)OwnerClientId;
+        Debug.Log($"OnNetworkSpawn | OwnerClientId={OwnerClientId} | Local={IsLocalPlayer} | Owner={IsOwner}");
+        transform.LookAt(TableManager.Instance.GetCasillaArray()[1].transform);
 
-        // Todo lo de la CameraManager quiza se pueda simplicar al hacer LoadScene y tener las camaras desactivadas y tal,
-        // Por ahora, con el testeo lo dejaremos asi pero habra que ver mas adelante
-
-        CameraManager.Instance.EscogerCamara(ID).transform.SetParent(padreCamara);
-        CameraManager.Instance.ResetCamaraValues(ID);
-        CameraManager.Instance.EscogerCamara(ID).enabled = false;
-        CameraManager.Instance.EscogerCamara(ID).gameObject.GetComponent<AudioListener>().enabled = false;
-        this.gameObject.name = ID.ToString();
         if (IsServer)
         {
-            GameManagerMultiplayer.Instance.RegistrarJugadores(this);
             dinero.Value = 2000;
+            karma.Value = 0;
+            transform.position = TableManager.Instance.GetCasillaArray()[0].transform.position;
+            transform.LookAt(TableManager.Instance.GetCasillaArray()[1].transform.position);
         }
+
+        CameraManager.Instance.AsignarCamaraPlayer(this, lookAtCamara, positionCamara);
+        this.gameObject.name = ID.ToString(); // <<< Esto tendremos que cogerlo del Lobby junto al icono etc
+        GameManagerMultiplayer.Instance.RegistrarJugadores(this);
+
         UIManager.Instance.ActivarPanelUIJugador(ID);
 
         if (IsOwner)
@@ -141,13 +159,12 @@ public class Jugador : NetworkBehaviour
             UIManager.Instance.ActivarInventarioJugador();
             UIManager.Instance.SetOwnerPlayer(this);
             GameManagerMultiplayer.Instance.SetOwnerPlayer(this);
-            CameraManager.Instance.EscogerCamara(ID).enabled = true;
-            CameraManager.Instance.EscogerCamara(ID).gameObject.GetComponent<AudioListener>().enabled = true;
-            transform.position = TableManager.Instance.GetCasillaArray()[0].transform.position;
-            transform.LookAt(TableManager.Instance.GetCasillaArray()[1].transform.position);
+            CameraManager.Instance.AsignarPrioridad(this);
+       
+
+            Debug.Log("Soy el jugador con el clientId de " + NetworkManager.Singleton.LocalClientId + " " + OwnerClientId);
         }
         faseActual = FaseJuego.LanzaDados;
-
     }
 
     [Rpc(SendTo.Server)]
@@ -160,7 +177,11 @@ public class Jugador : NetworkBehaviour
     {
 
         if (!IsOwner) return;
-        Debug.Log(faseActual);
+      
+        // Activar esto cuando queramos hacerlo mediante lobby etc para controlar que nadie pueda hacer nada hasta que todos se hayan conectado
+        // y el servido lo sepa
+        //if (GameManagerMultiplayer.Instance.hasGameStarted.Value != true) return;          
+        
         if (GameManagerMultiplayer.Instance.turnoPlayerActual.Value == ID && Input.GetKeyDown(KeyCode.Space))
         {
             //INICIAMOS EL LANZAMIENTO DE DADOS
@@ -182,7 +203,7 @@ public class Jugador : NetworkBehaviour
         int sumaDados = dadoUno + dadoDos;
         
         //MODIFICAR ESTO PARA MOVERNOS LA CASILLA QUE QUERAMOS
-        sumaDados = 2;
+        //sumaDados = 8;
 
         //PARA HACER DOBLES
         //dadoUno = dadoDos;
@@ -253,6 +274,7 @@ public class Jugador : NetworkBehaviour
         
         while(numCasillas > 0)
         {
+            enMovimiento = true;
             posTablero++;
             posTablero %= TableManager.Instance.GetCasillaArray().Length;
             List<Transform> posCamino = TableManager.Instance.GetCaminoTablero()[posTablero].GetPosicionesCamino();
@@ -280,7 +302,9 @@ public class Jugador : NetworkBehaviour
             {
                 while (transform.position != points[i])
                 {
-                    transform.position = Vector3.MoveTowards(transform.position, points[i], 10 * Time.deltaTime);
+                    transform.position = Vector3.MoveTowards(transform.position, points[i], MAX_SPEED * Time.deltaTime);
+                    transform.LookAt(TableManager.Instance.GetCasillaArray()[posTablero + 1].transform);
+
                     yield return null;
                 }
             }
@@ -297,7 +321,8 @@ public class Jugador : NetworkBehaviour
             DarVuelta();
             //SUMAR VUELTA COLGADO DE CARTA TAROT
         }
-       
+
+        enMovimiento = false;
         TableManager.Instance.ComprobarCasilla(posTablero);      
 
         // AQUI TENDREMOS LA LOGICA DEL CARRO
@@ -347,7 +372,11 @@ public class Jugador : NetworkBehaviour
 
     }
 
-
+    public void SetIngresosPasivos(int cantDinero, int cantKarma)
+    {
+        dineroPasivo.Value = cantDinero;
+        karmaPasivo.Value = cantKarma;
+    }
    
 
     public void SetImpostor(bool valor)
@@ -433,6 +462,7 @@ public class Jugador : NetworkBehaviour
     {
         haAtajado = !haAtajado;
     }
+
 }
 
    

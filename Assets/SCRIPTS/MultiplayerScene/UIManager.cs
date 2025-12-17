@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject prefabUIDineroPlayer;
     [SerializeField] Transform padreUIDinero;
     public static UIManager Instance;
-
+    [SerializeField] Canvas mainCanvas;
     [SerializeField] List<UIPlayerData> listaUI = new();
 
     [Header("Variables del inventario")]
@@ -149,6 +149,8 @@ public class UIManager : MonoBehaviour
         OnBotonSiClickado?.Invoke();
 
         panelConfirmacionCompra.SetActive(false);
+
+        TableManager.Instance.ComprobarGrupoCompradoModoLocal(casillaAComprar, GameManagerMultiplayer.Instance.ownerPlayer.GetPlayerID());
     }
     public void RechazarCompraCasilla()
     {
@@ -227,4 +229,5 @@ public class UIManager : MonoBehaviour
         return casillaAComprar;
     }
     
+  
 }

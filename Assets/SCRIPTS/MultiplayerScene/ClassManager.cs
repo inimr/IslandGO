@@ -21,7 +21,7 @@ public class ClassManager : NetworkBehaviour
 
     [SerializeField] List<ClassesSO> baseDatosClases = new();
 
-    private List<int> clasesEscogidas;
+    private List<int> clasesEscogidas = new();
 
     private int claseAnteriorTurno = -1;
 
@@ -62,7 +62,7 @@ public class ClassManager : NetworkBehaviour
 
     private int turnosRestantesReactivarTrampero = 0;
 
-    public const int NUMERO_IMPOSTOR = 7;
+    public const int NUMERO_IMPOSTOR = 8; //<< Recordar cambiar esto si se modifica la lista
     private void Awake()
     {
         if(Instance == null)

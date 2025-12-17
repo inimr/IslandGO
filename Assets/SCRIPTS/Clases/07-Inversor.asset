@@ -17,5 +17,5 @@ MonoBehaviour:
   textoDescriptivo: "Paga un %15 m\xE1s al comprar las propiedades pero los ingresos
     aumentan un %30. Todas las propiedades compradas antes de escoger la clase tambi\xE9n
     aumentan sus ingresos."
-  spriteBoton: {fileID: 21300000, guid: c537176995a14c84cb4f9060f37b55a7, type: 3}
-  iconoPlayer: {fileID: 21300000, guid: c537176995a14c84cb4f9060f37b55a7, type: 3}
+  spriteBoton: {fileID: 21300000, guid: 79afa77934826d44e85136f3b773bc10, type: 3}
+  iconoPlayer: {fileID: 21300000, guid: 79afa77934826d44e85136f3b773bc10, type: 3}

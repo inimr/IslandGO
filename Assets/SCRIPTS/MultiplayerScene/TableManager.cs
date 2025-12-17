@@ -192,6 +192,18 @@ public class TableManager : MonoBehaviour
        
     }
 
+
+    //Esto lo hacemos en modo local para comprobar las cosas en el modo negociacion, modificaremos aqui los valores de casilla para saber
+    // cuales son del jugador, y cuales no, sin importar realmente de quien son. Lo unico que queremos saber es si son nuestras.
+
+    // RECORDAR MODIFICAR ESTO UNA VEZ SE HA HECHO LA NEGOCIACION!!! ES UNA CHAPUZA? Seguramente
+
+    public void ComprobarGrupoCompradoModoLocal(Casilla casilla, int player)
+    {
+        casilla.ModificarDatosAlCambiarPropietario(player, true);
+        ComprobarGrupoCompleto(casilla);
+    }
+
     public void ComprobarGrupoCompleto(Casilla casilla)
     {
         int IDGrupo = casilla.GetGroupID();

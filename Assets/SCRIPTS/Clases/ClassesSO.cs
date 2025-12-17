@@ -13,4 +13,6 @@ public class ClassesSO : ScriptableObject
     public Sprite spriteBoton;
 
     public Sprite iconoPlayer;
+
+    public bool habilidadClickable;
 }

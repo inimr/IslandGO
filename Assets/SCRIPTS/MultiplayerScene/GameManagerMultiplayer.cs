@@ -13,16 +13,20 @@ public class GameManagerMultiplayer : NetworkBehaviour
         public int ID;
         public Jugador player;
         public PlayerUIData UIData;
-        public List<Casilla> listaPropiedades = new(); 
+        public List<Casilla> listaPropiedades = new(); //<< ESTO NO SE SI LO USAREMOS PARA ALGO LA VERDAD
     }
 
     public static GameManagerMultiplayer Instance;
     private DiaryManager diaryManager;
+
+    public NetworkVariable<bool> hasGameStarted = new();
     public NetworkVariable<int> turnoPlayerActual = new ();
     private int IDturnoInicial = 0; // MAS ADELANTE SE TENDRA QUE MODIFICAR
     private int contadorTurno;
 
-    public Jugador ownerPlayer {  get; private set; }
+    [SerializeField] GameObject playerPrefab;
+
+    public Jugador ownerPlayer{  get; private set; }
     private int movimientosFichasPendientes; //ESTO SERAN LAS FICHAS DE LOS NO-JUGADORES
 
     private Dictionary<ulong, Jugador> listaJugadores = new();
@@ -56,7 +60,11 @@ public class GameManagerMultiplayer : NetworkBehaviour
         OnCasillaRechazada += GameManagerMultiplayer_OnCasillaRechazada;
 
         diaryManager = FindFirstObjectByType<DiaryManager>();
+
+     
     }
+
+   
 
     // Si luego queremos cambiar los parametros de como se ordenan las listas tenemos que modificar esta para todas las pestañas
     // que no sean la mano jugable; para esa, el otro Sort esta en el Script Jugador.
@@ -66,13 +74,12 @@ public class GameManagerMultiplayer : NetworkBehaviour
         int carta2 = c2.GetGroupID();
 
         int result = carta1.CompareTo(carta2);
-        if(result == 0)
+        if (result == 0)
         {
             result = c1.ID.CompareTo(c2.ID);
         }
         return result;
     }
-
     private void TableManager_OnALaCarcel()
     {
         ComienzoCambioTurno();
@@ -87,7 +94,6 @@ public class GameManagerMultiplayer : NetworkBehaviour
     {
         Casilla casilla = TableManager.Instance.GetCasillaArray()[GetActualPlayer().GetPosicionTablero()];
         listaPlayers[turnoPlayerActual.Value].listaPropiedades.Add(casilla);
-        listaPlayers[turnoPlayerActual.Value].listaPropiedades.Sort(SortCasillasByGroupID);
         casilla.ModificarDatosAlCambiarPropietario(turnoPlayerActual.Value, true);
         TableManager.Instance.ComprobarGrupoCompleto(casilla);        
 
@@ -123,6 +129,7 @@ public class GameManagerMultiplayer : NetworkBehaviour
             GetActualPlayer().SetNumDobles(0);
             GetActualPlayer().ModificarEsDobles(false);
             CambiarFaseRpc(Jugador.FaseJuego.Planificacion, RpcTarget.Single(IDPlayer, RpcTargetUse.Temp));
+          
         }
     }
 
@@ -177,6 +184,13 @@ public class GameManagerMultiplayer : NetworkBehaviour
     {
         turnoPlayerActual.Value++;
         turnoPlayerActual.Value %= listaPlayers.Count;
+        
+        while (GetActualPlayer().enDerrota.Value)
+        {
+            turnoPlayerActual.Value++;
+            turnoPlayerActual.Value %= listaPlayers.Count;
+        }
+      
 
         if (GetActualPlayer().GetImpostor())
         {
@@ -227,6 +241,8 @@ public class GameManagerMultiplayer : NetworkBehaviour
         }
         ulong IDJugador = (ulong) turnoPlayerActual.Value;
         CambiarFaseRpc(Jugador.FaseJuego.LanzaDados, RpcTarget.Single(IDJugador, RpcTargetUse.Temp));
+
+       
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
@@ -267,6 +283,8 @@ public class GameManagerMultiplayer : NetworkBehaviour
             int cantidadKarmaFinal = data.player.GetClass() == Classes.Feligres ? (int)(cantidadKarma * ClassManager.AUMENTO_FELIGRES) : cantidadKarma;
             int cantidadDineroFinal = data.player.GetClass() == Classes.Comerciante ? (int)(cantidadDinero * ClassManager.AUMENTO_COMERCIANTE) : cantidadDinero;
             ulong IDJugadorPanel = (ulong)data.ID;
+            data.player.SetIngresosPasivos(cantidadDineroFinal, cantidadKarmaFinal);
+          
             CheckFinalizacionVueltaTurnosRpc(cantidadDineroFinal, cantidadKarmaFinal, RpcTarget.Single(IDJugadorPanel, RpcTargetUse.Temp));
         }
 
@@ -305,6 +323,122 @@ public class GameManagerMultiplayer : NetworkBehaviour
         OnCasillaComprable?.Invoke(casilla);
 
     }
+    //--------------------------------------------- DIARIO -------------------------------------
+
+
+    [Rpc(SendTo.Server)]
+    public void ActualizarDiarioRpc(ulong player)
+    {
+        List<List<int>> listaPropiedades = new();
+        
+        for(int i = 0; i < listaPlayers.Count; i++)
+        {
+            listaPropiedades.Add(new List<int>());
+            if (listaPlayers[i].player.enDerrota.Value) continue;
+
+            int cantidadCasillas = listaPlayers[i].listaPropiedades.Count;
+            for(int y = 0; y < cantidadCasillas; y++)
+            {
+                listaPropiedades[i].Add(listaPlayers[i].listaPropiedades[y].GetPosTablero());
+            }
+            
+        }
+
+
+        int[] arrayPropsP0 = listaPropiedades.Count > 0 ? listaPropiedades[0]?.ToArray() : null;
+        int[] arrayPropsP1 = listaPropiedades.Count > 1 ? listaPropiedades[1]?.ToArray() : null;
+        int[] arrayPropsP2 = listaPropiedades.Count > 2 ? listaPropiedades[2]?.ToArray() : null;
+        int[] arrayPropsP3 = listaPropiedades.Count > 3 ? listaPropiedades[3]?.ToArray() : null;
+
+        
+
+        MandarInfoAJugador(player, arrayPropsP0, arrayPropsP1, arrayPropsP2, arrayPropsP3);
+
+    }
+
+    private void MandarInfoAJugador(ulong player, int[] lista0, int[] lista1, int[] lista2, int[] lista3)
+    {
+        MandarInfoListasAJugadorRpc(lista0, lista1, lista2, lista3, RpcTarget.Single(player, RpcTargetUse.Temp));
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void MandarInfoListasAJugadorRpc(int[] lista0, int[] lista1, int[] lista2, int[] lista3, RpcParams clientRpcParams)
+    {
+
+        // CORREGIR ERROR, SI SOMOS MENOS DE 4 PLAYERS, DA ERROR DE INDEX
+
+        if (!IsServer)
+        {
+            int[][] almacen = new int[][] { lista0, lista1, lista2, lista3 };
+
+            for (int i = 0; i < listaPlayers.Count; i++)
+            {
+                listaPlayers[i].listaPropiedades.Clear();
+                if (almacen[i].Length == 0) continue;
+                foreach (int y in almacen[i])
+                {
+                    Casilla casilla = TableManager.Instance.GetCasillaArray()[y];
+                    listaPlayers[i].listaPropiedades.Add(casilla);
+                }
+                listaPlayers[i].listaPropiedades.Sort(SortCasillasByGroupID);
+            }
+        }
+
+        diaryManager.ActualizarValoresDiario();
+
+    }
+    [Rpc(SendTo.SpecifiedInParams)]
+    public void MandarOfertaJugadorRpc(int[] listaOfrecer, int[] listaPedir, int dineroOfrecer, int dineroPedir, int jugadorOfreciente, RpcParams clientRpcParams)
+    {
+        diaryManager.RellenarDatosOfertaNegociadora(listaOfrecer, listaPedir, dineroOfrecer, dineroPedir, jugadorOfreciente);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void ModificarValoresNegociacionRpc(int playerID0, int playerID1, bool estado)
+    {
+        listaPlayers[playerID0].player.enNegociacion.Value = estado;
+        listaPlayers[playerID1].player.enNegociacion.Value = estado;
+
+
+    }
+
+    [Rpc(SendTo.Server)]
+    public void ActualizarNegociacionRpc(int player0, int player1, int[]listaOfrecidaPlayer0, int[] listaPedidaPlayer1, int dineroOfrecido, int dineroPedido)
+    {
+        foreach(int i in listaOfrecidaPlayer0)
+        {
+            Casilla cas = TableManager.Instance.GetCasillaArray()[i];
+
+            cas.ModificarDatosAlCambiarPropietario(player1, true);
+            cas.SetNivelAlquiler(0);
+            TableManager.Instance.ComprobarGrupoCompleto(cas);
+        }
+
+        //FALTA TAROT
+        foreach(int i in listaPedidaPlayer1)
+        {
+            Casilla cas = TableManager.Instance.GetCasillaArray()[i];
+
+            cas.ModificarDatosAlCambiarPropietario(player0, true);
+            cas.SetNivelAlquiler(0);
+            TableManager.Instance.ComprobarGrupoCompleto(cas);
+        }
+
+        //FALTA TAROT
+
+        int dineroGanadoPlayer0 = -dineroOfrecido + dineroPedido;
+        int dineroGanadoPlayer1 = dineroOfrecido - dineroPedido;
+        GanarDinero(dineroGanadoPlayer0, listaPlayers[player0].player);
+        GanarDinero(dineroGanadoPlayer1, listaPlayers[player1].player);
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    public void MandarConfirmacionNegociacionRpc(bool aceptado, int oponenteID, RpcParams clientRpcParams)
+    {
+        diaryManager.ConfirmacionNegociacion(aceptado, oponenteID);
+    }
+
+    //------------------------------------------- FIN DIARIO -------------------------
 
     #region REGISTRO_PLAYERS
 
@@ -317,96 +451,50 @@ public class GameManagerMultiplayer : NetworkBehaviour
         };
         listaPlayers.Add(data);
 
+        listaPlayers.Sort((a,b) => a.ID.CompareTo(b.ID)); //Para ordenar la lista de manera de los ID
         //ESTO ES CON DICCIONARIO Y NO CON LISTA, LO USAREMOS CUANDO SEPAMOS QUE FUNCIONA BIEN CON LISTA QUE ES VISIBLE
         //listaJugadores.Add(player.GetPlayerID(), player);
     }
 
-    //--------------------------------------------- DIARIO -------------------------------------
-
-  
-    [Rpc(SendTo.Server)]
-    public void ActualizarDiarioRpc(ulong player)
-    {
-        
-        int cantidadCasillas0 = listaPlayers[0].listaPropiedades.Count;
-        int cantidadCasillas1 = listaPlayers[1].listaPropiedades.Count;
-        int cantidadCasillas2 = listaPlayers[2].listaPropiedades.Count;
-        int cantidadCasillas3 = listaPlayers[3].listaPropiedades.Count;
-
-        int[] arrayCasillasPlayer0 = new int[cantidadCasillas0];
-        int[] arrayCasillasPlayer1 = new int[cantidadCasillas1];
-        int[] arrayCasillasPlayer2 = new int[cantidadCasillas2];
-        int[] arrayCasillasPlayer3 = new int[cantidadCasillas3];
-        
-        for(int i = 0; i < cantidadCasillas0; i++)
-        {
-            arrayCasillasPlayer0[i] = listaPlayers[0].listaPropiedades[i].GetPosTablero(); //Cogemos el ID pero seguramente sea mejor coger otra cosa
-        }
-
-        for(int i = 0;i < cantidadCasillas1; i++)
-        {
-            arrayCasillasPlayer1[i] = listaPlayers[1].listaPropiedades[i].GetPosTablero();
-        }
-        
-        for(int i = 0; i<cantidadCasillas2; i++)
-        {
-            arrayCasillasPlayer2[i] = listaPlayers[2].listaPropiedades[i].GetPosTablero();
-        }
-        for(int i = 0; i < cantidadCasillas3; i++)
-        {
-            arrayCasillasPlayer3[i] = listaPlayers[3].listaPropiedades[i].GetPosTablero();
-        }
-
-        MandarInfoAJugador(player, arrayCasillasPlayer0, arrayCasillasPlayer1, arrayCasillasPlayer2, arrayCasillasPlayer3);
-
-        //Actualizar el GameManagerMultiplayer del jugador que ha pedido la actualizacion
-        //Cambiar el valor de la booleana de DiaryManager de manera local
-
-    }
-
-    private void MandarInfoAJugador(ulong player, int[] lista0, int[] lista1, int[] lista2, int[] lista3)
-    {
-        MandarInfoListasAJugadorRpc(lista0, lista1, lista2, lista3, RpcTarget.Single(player, RpcTargetUse.Temp));
-    }
-
-    [Rpc(SendTo.SpecifiedInParams)]
-    private void MandarInfoListasAJugadorRpc(int[] lista0, int[] lista1, int[] lista2, int[] lista3, RpcParams clientRpcParams)
-    {
-        //Cambiar el valor del update de DiaryManager
-        //Resto del code que pueda hacer falta
-
-        if (!IsServer)
-        {
-            int[][] almacen = new int[][] {lista0, lista1, lista2, lista3};           
-
-            for (int i = 0; i < almacen.Length; i++)
-            {
-                listaPlayers[i].listaPropiedades.Clear();
-
-                foreach(int y in almacen[i])
-                {                    
-                    Casilla casilla = TableManager.Instance.GetCasillaArray()[y];
-                    listaPlayers[i].listaPropiedades.Add(casilla);
-                }              
-                listaPlayers[i].listaPropiedades.Sort(SortCasillasByGroupID);
-            }
-        }
-
-        diaryManager.ActualizarValoresDiario();
-        
-    }
-
-    //------------------------------------------- FIN DIARIO -------------------------
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
+            Debug.Log("Hemos conseguido entrar satisfactoriamente aqui solo desde el host");
             turnoPlayerActual.Value = 0; //<<<< ESTE VALOR POR AHORA SERA 0 HASTA QUE PENSEMOS COMO HACERLO DE OTRA MANERA, ES EL TURNO DEL PLAYER
+
+          
         }
     }
 
-    #endregion
+    public void CreacionPlayers()
+    {
+        if (!IsServer) return;
+        foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
+        {
 
+            GameObject newPlayer = Instantiate(playerPrefab, TableManager.Instance.GetCasillaArray()[0].transform.position, Quaternion.identity);
+
+            NetworkObject obj = newPlayer.GetComponent<NetworkObject>();
+
+            obj.SpawnAsPlayerObject(client.ClientId);
+
+            //obj.SpawnWithOwnership(client.ClientId);
+            Debug.Log("Hemos entrado al foreach y este es el clientId de cada uno " + client.ClientId);
+
+        }
+    }
+    #endregion
+    private bool GetLobbyManager()
+    {
+       LobbyManager obj = GameObject.FindFirstObjectByType<LobbyManager>();
+
+        if (obj == null) return false;
+        else
+        {
+            return true;
+        }
+    }
     public Jugador GetActualPlayer()
     {
         return listaPlayers[turnoPlayerActual.Value].player;

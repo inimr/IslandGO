@@ -17,5 +17,6 @@ MonoBehaviour:
   textoDescriptivo: "Cada 2 turnos puede sacar un pandillero que dura 3 turnos. El
     pandillero no es afectado por otros pandilleros. No puede ganar m\xE1s karma
     (mantiene la que tiene actualmente)."
-  spriteBoton: {fileID: 21300000, guid: 098f93b121abc634eb91a59a40502161, type: 3}
-  iconoPlayer: {fileID: 21300000, guid: 098f93b121abc634eb91a59a40502161, type: 3}
+  spriteBoton: {fileID: 21300000, guid: 13d25f4f2c14f0849b0df081145ca1a2, type: 3}
+  iconoPlayer: {fileID: 21300000, guid: 13d25f4f2c14f0849b0df081145ca1a2, type: 3}
+  habilidadClickable: 1

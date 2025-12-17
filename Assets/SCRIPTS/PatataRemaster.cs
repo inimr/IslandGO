@@ -1,36 +1,28 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
+
 public class PatataRemaster : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public float rotationSpeed = 180f;
-    public Transform camaraTransform;
-    private CharacterController controller;
 
-    public CamaraController camara;
-    void Start()
+    [SerializeField]private float distanciaMinima = 0.25f;
+    public LayerMask mask;
+
+    private float maxRayDistance = 1f;
+    private void LateUpdate()
     {
-        controller = GetComponent<CharacterController>();
-    }
-
-    void Update()
-    {
-        // Movimiento hacia adelante y atrás (W y S)
-        float vertical = Input.GetAxis("Vertical");
-        Vector3 move = transform.forward * vertical;
-
-        // Aplicar movimiento
-        controller.SimpleMove(move * moveSpeed);
-
-        // Rotación izquierda/derecha (A y D)
-        float horizontal = Input.GetAxis("Horizontal");
-        transform.Rotate(0, horizontal * rotationSpeed * Time.deltaTime, 0);
-
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        if(Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, maxRayDistance, mask))
+        
         {
-            camara.CrearTarget(camaraTransform);
+          //  Debug.Log("El nombre del objeto golpeado por el rayo es " + hit.transform.gameObject.name);
+            Debug.DrawRay(transform.position, new Vector3(0, -50,0), Color.red);
+          
+
+            float posY = hit.point.y + distanciaMinima;
+            Vector3 nuevaPos = new(transform.position.x, posY, transform.position.z);
+
+            transform.position = nuevaPos;
+
+            //Debug.Log("La altura del objeto es de " + transform.position.y);
         }
     }
 }

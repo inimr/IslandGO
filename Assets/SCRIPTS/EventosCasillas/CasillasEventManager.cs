@@ -69,7 +69,7 @@ public class CasillasEventManager : NetworkBehaviour
 
                     if (data.player != jugador)
                     {
-                        if (data.player.enDerrota) continue;
+                        if (data.player.enDerrota.Value) continue;
                         if (data.player.dinero.Value < 50)
                         {
                             //MODO HIPOTECACION

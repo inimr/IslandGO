@@ -16,5 +16,5 @@ MonoBehaviour:
   clase: 6
   textoDescriptivo: "Paga un %20 menos en todas las propiedades que no sean suyas.
     Sale de la carcel tras estar como m\xE1ximo 1 turno."
-  spriteBoton: {fileID: 21300000, guid: 4f7f3d8cb95f66c40abd45f0f74348e6, type: 3}
-  iconoPlayer: {fileID: 21300000, guid: 4f7f3d8cb95f66c40abd45f0f74348e6, type: 3}
+  spriteBoton: {fileID: 21300000, guid: aa938a3e1aade8c4a903c7e7a5d4281a, type: 3}
+  iconoPlayer: {fileID: 21300000, guid: aa938a3e1aade8c4a903c7e7a5d4281a, type: 3}

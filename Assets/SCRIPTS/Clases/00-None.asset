@@ -10,11 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ed98501506631342b6aef5e1f592a17, type: 3}
-  m_Name: 02-Feligres
+  m_Name: 00-None
   m_EditorClassIdentifier: 
-  name: Feligres
-  clase: 2
-  textoDescriptivo: "Gana un %25 m\xE1s de karma de todas las fuentes. Le cuesta
-    menos dinero mejorar el acr\xF3polis y la catedral."
-  spriteBoton: {fileID: 21300000, guid: 0081772d6143f1f4496c96b221b47c66, type: 3}
-  iconoPlayer: {fileID: 21300000, guid: 0081772d6143f1f4496c96b221b47c66, type: 3}
+  name: None
+  clase: 0
+  textoDescriptivo: El jugador no ha escogido una clase todavia.
+  spriteBoton: {fileID: 21300000, guid: 71f335b4f36a30b48852b2791ada1f3b, type: 3}
+  iconoPlayer: {fileID: 21300000, guid: 8ebe80dfc9e8a6144b0a6ad970ee0bae, type: 3}

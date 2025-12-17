@@ -16,5 +16,5 @@ MonoBehaviour:
   clase: 8
   textoDescriptivo: Al comienzo de tu turno escoges convertirte en cualquiera de
     las otras clases de la partida. No puedes repetir esa clase el siguiente turno
-  spriteBoton: {fileID: 21300000, guid: 504d85b813b153d4f99df0bd9d31a180, type: 3}
-  iconoPlayer: {fileID: 21300000, guid: 504d85b813b153d4f99df0bd9d31a180, type: 3}
+  spriteBoton: {fileID: 21300000, guid: 3e5078445441fb74b9c31c45d7d406f7, type: 3}
+  iconoPlayer: {fileID: 21300000, guid: 3e5078445441fb74b9c31c45d7d406f7, type: 3}

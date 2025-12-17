@@ -141,7 +141,7 @@ public class LogicaSuerteMultiplayer : MonoBehaviour
 
                     if(data.player != player)
                     {
-                        if (data.player.enDerrota) continue;
+                        if (data.player.enDerrota.Value) continue;
                         if(player.dinero.Value < 50)
                         {
                             //MODO HIPOTECACION, habra que ver que pasa si el jugador no puede pagar a mas de uno la verdad
@@ -237,7 +237,7 @@ public class LogicaSuerteMultiplayer : MonoBehaviour
 
                     if (data.player != player)
                     {
-                        if (data.player.enDerrota) continue;
+                        if (data.player.enDerrota.Value) continue;
                         if(data.player.dinero.Value < 50)
                         {
                             //MODO HIPOTECACION
