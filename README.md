@@ -1,3 +1,5 @@
+# 🇪🇸 Español
+
 # WIP: Proyecto en desarrollo
 
 > Este proyecto no está terminado e iremos completándolo.
@@ -19,3 +21,28 @@ Todo el código actual está hecho o revisado/modificado por mí. Entre otras co
 - Eventos en caída en casillas
 - Distintas maneras de finalizar la partida
 - Multijugador
+
+
+# 🇬🇧 English
+
+# WIP: Project under development
+
+> This project is not finished and will be completed over time.
+
+## Project summary
+A Monopoly-like game where only one of the players can win on the island, by purchasing properties or making decisions that will affect their gameplay.
+
+This is the first group project carried out by several classmates after finishing our Vocational Training course.
+
+I joined a 4-person project to give a boost to our programming skills.
+
+The modeling and design were done by other team members.
+
+## Code and contributions
+All the current code has been written or reviewed/modified by me. Among other things:
+
+- Enemy token logic  
+- All board logic  
+- Events triggered when landing on tiles  
+- Different ways to end the game  
+- Multiplayer
